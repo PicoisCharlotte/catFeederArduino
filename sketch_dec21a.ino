@@ -13,33 +13,41 @@ int bp                   = 2;     // Broche d'entrée du bouton poussoir
 int M2                 = 4;     // Rapport cyclique du signal de contrôle du moteur
 int duree                = 7;     // Nombre de sec pendant lesquelles le moteur va tourner pour une distribution : à adapter selon la longueur du tube et la vitesse de rotation du moteur
 unsigned long dureeCycle = 10; // Nombre de sec séparant 2 distributions, équivaut ici à 4h
-
+int buttonState = 0;
 
 /**
  * Fonction d'initialisation
  */
 void setup(void)
 {
-    pinMode(bp, INPUT);
+    pinMode(bp, INPUT_PULLUP);
+    pinMode(M2, OUTPUT);
   
     // L'interruption int.0 écoute la broche 2 de l'Arduino Uno
     // Déclenche une interruption lorsque le signal bp est à l'état BAS (bouton poussoir appuyé)
     //attachInterrupt(0, startMoteur, LOW);
 
     // Initialise la commande moteur
-    analogWrite(E2, 255);
+    //analogWrite(E2, 255);
 }
 
 
 /**
  * Boucle principale
  */
-void loop()
-{
-    // Attente jusqu'au prochain cycle de distribution (ici 4h)
-    delay(50);
-    //attendre(dureeCycle);
+void loop(){
+  buttonState = digitalRead(bp);
+
+  if(buttonState == LOW) {
     actionnerMoteur();
+    Serial.print(buttonState);
+    Serial.print(" pouet              ");
+
+  }
+    // Attente jusqu'au prochain cycle de distribution (ici 4h)
+    //delay(50);
+    //attendre(dureeCycle);
+    
 }
 
 /**
@@ -49,11 +57,14 @@ void actionnerMoteur()
 {
   int value;
   for(value = 0; value <= 255; value += 5) {
-    digitalWrite(E2, HIGH);
-    analogWrite(M2, value);
-    //delay(30);
+    Serial.print("               pouet2           ");
+    Serial.println(value);
+    digitalWrite(M2, HIGH);
+    analogWrite(E2, value);
+        delay(30);
 
-  }   
+    }
+     analogWrite(E2, 0);
 }
 
 /**
