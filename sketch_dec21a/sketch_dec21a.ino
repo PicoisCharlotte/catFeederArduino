@@ -13,6 +13,8 @@ int M2                 = 4;     // Rapport cyclique du signal de contrôle du mo
 unsigned long timeCycle = 60000; // Nombre de sec séparant 2 distributions, équivaut ici à 4h
 int buttonState = 0;
 
+unsigned long previousMillis = 0;
+
 /**
  * Fonction d'initialisation
  */
@@ -36,16 +38,23 @@ void setup(void)
 void loop(){
   buttonState = digitalRead(bp);
 
-  actionMotorPeriod();
+  unsigned long currentMillis = millis();
 
-  if(buttonState == LOW) {
-    actionMotor();
+
+
+  if(currentMillis - previousMillis >= timeCycle) {
+    
+    previousMillis = currentMillis;
+    
+    actionMotorPeriod();
+
+    
   }
-    // Attente jusqu'au prochain cycle de distribution (ici 4h)
-    //delay(50);
-    //attendre(dureeCycle);
-      delay(timeCycle);
-
+  if(buttonState == LOW) {
+    previousMillis = currentMillis;
+      actionMotor();
+    }
+  
 }
 
 void actionMotorPeriod() {
